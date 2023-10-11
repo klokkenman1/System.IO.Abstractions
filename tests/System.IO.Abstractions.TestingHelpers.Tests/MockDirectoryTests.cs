@@ -1234,6 +1234,28 @@ namespace System.IO.Abstractions.TestingHelpers.Tests
         }
 
         [Test]
+        public void MockDirectory_GetDirectories_RelativeDirectory_WithChildAndGrandchild_ShouldReturnRelativeChildDirectoryWithoutGrandchild()
+        {
+            var relativeDirPath = @".\Folder";
+
+            // Arrange
+            var currentDirectory = XFS.Path(@"T:\foo");
+            var fileSystem = new MockFileSystem(null, currentDirectory: currentDirectory);
+            fileSystem.Directory.CreateDirectory(XFS.Path(relativeDirPath)); 
+            fileSystem.Directory.CreateDirectory(XFS.Path(relativeDirPath + @"\child"));
+            fileSystem.Directory.CreateDirectory(XFS.Path(relativeDirPath + @"\child\grandchild"));
+
+            // Act
+            var actualResult = fileSystem.Directory.GetDirectories(XFS.Path(relativeDirPath));
+
+            // Assert
+            CollectionAssert.AreEqual(
+                new[] { XFS.Path(relativeDirPath + @"\child") },
+                actualResult
+            );
+        }
+
+        [Test]
         public void MockDirectory_GetDirectories_AbsoluteWithNoSubDirectories_ShouldReturnDirectories()
         {
             // Arrange
